@@ -90,7 +90,7 @@ def get_24h_records():
 def delete_old_records():
     conn = __get_cursor("delete_old_records()")
     if(conn == None):
-        logger.log("error getting db cursor in delete_old_records(). Aborted")
+        logger.log_error("error getting db cursor in delete_old_records(). Aborted")
         return 
 
     try: 
