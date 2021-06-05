@@ -10,6 +10,7 @@ import time
 import logger
 import database_wrapper
 import data_comp_wrapper
+import email_time
 
 FILE_STUB = "/home/gavin/well-man/WellFlex/Watering-Hole-Brain/files/"
 
@@ -21,10 +22,31 @@ CHECK_FILE = FILE_STUB + "Email_sender_check"
 EMAILS = ["gavinlilly25@gmail.com", "gtlilly@hey.com"]
 SEND_TIMES = ["18:00"]
 RESET_TIME = ["00:00"]
+FREQUENCY = 30
 
 # runner(): void
 def runner():
+    logger.log_event("Email_sender runner started...")
+    times_array = []
+    for x in EMAILS:
+        times_array.append(email_time.email_time(x))
+
     while(check_run):
+        curtime = time.strftime("%H:%M", time.localtime())
+        if(curtime == RESET_TIME):
+            for x in times_array:
+                x.set_passed(False)
+
+        for x in times_array:
+            if(curtime == x.get_time() and x.has_passed() == False):
+                x.set_passed(False)
+                try:
+                    send_email()
+
+                except:
+                    logger.log_error("Couldn't send email")
+        time.sleep(FREQUENCY)
+
 
 
 # get_str_from_file(filename: String): String
@@ -33,7 +55,7 @@ def get_str_from_file(filename):
         file_content = None
 
         try:
-            check_file_handle = open 
+            check_file_handle = open(filename)
             file_handle = open(filename, 'r')
             file_content = file_handle.readline()
 
