@@ -43,6 +43,7 @@ def add_water_record(level):
         # Get cursor
         cur = conn.cursor()
 
+        level = int(round(level, 3) * 1000)
         cur.execute("INSERT INTO records (level, time) VALUES (?, NOW());", (level,))
         
         conn.commit()

@@ -52,7 +52,7 @@ def check_continue_helper(contents):
 def record_measurement():
     # get Sensor measurement
     # add it to database
-    level = int(round(SENSOR.get_percent(), 3) * 1000)
+    level = SENSOR.get_percent()
     database_wrapper.add_water_record(level)
 
 runner()
