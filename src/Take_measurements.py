@@ -5,14 +5,13 @@ import time
 import sensor_wrapper
 import logger
 import database_wrapper
+import get_prop
 
-CHECK_FILE = "/home/gavin/well-man/WellFlex/WellFlex/files/check_take_measurements"
-ERROR_FILE = "/home/gavin/well-man/WellFlex/WellFlex/files/error_log"
-EVENT_FILE = "/home/gavin/well-man/WellFlex/WellFlex/files/event_log"
+CHECK_FILE = get_prop.get_prop("TAKE_MEASUREMENTS_CHECK_FILE", "s")
 
-FREQUENCY = 60
+FREQUENCY = get_prop.get_prop("MEASUREMENT_FREQUENCY", "n")
 
-SENSOR = sensor_wrapper.GeneralSensor(True)
+SENSOR = sensor_wrapper.GeneralSensor(get_prop.get_prop("MOCK", "b"))
 
 # runnner(): void
 def runner():
@@ -52,7 +51,7 @@ def check_continue_helper(contents):
 def record_measurement():
     # get Sensor measurement
     # add it to database
-    level = int(round(SENSOR.get_percent(), 3) * 1000)
+    level = SENSOR.get_percent()
     database_wrapper.add_water_record(level)
 
 runner()

@@ -1,8 +1,12 @@
+# Module imports
 from datetime import datetime
 
-FILE_STUB = "/home/gavin/well-man/WellFlex/Watering-Hole-Brain/files/"
-ERROR_FILE = FILE_STUB + "error_log"
-EVENT_FILE = FILE_STUB + "event_log"
+# My imports
+import get_prop
+
+FILE_STUB = get_prop.get_prop("FILE_STUB", "s")
+ERROR_FILE = get_prop.get_prop("ERROR_LOG_FILE", "s")
+EVENT_FILE = get_prop.get_prop("EVENT_LOG_FILE", "s")
 
 
 # log(msg: String, filename: String): void
