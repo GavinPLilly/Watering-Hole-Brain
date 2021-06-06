@@ -16,7 +16,7 @@
 # database_wrapper
 # MARIADB_USERNAME: gavin
 # DATABASE_NAME: 
-# DATEBASE_PASSWORD: 
+# DATABASE_PASSWORD: 
  
 # sensor_wrapper
 # MOCK: 
