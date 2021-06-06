@@ -1,4 +1,6 @@
 # Module imports
+import matplotlib
+matplotlib.use("Agg")
 
 # My imports
 import logger

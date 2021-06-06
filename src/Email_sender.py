@@ -11,18 +11,17 @@ import logger
 import database_wrapper
 import data_comp_wrapper
 import email_time
+import get_prop
 
-FILE_STUB = "/home/gavin/well-man/WellFlex/Watering-Hole-Brain/files/"
+EMAIL_PASSWORD = get_prop.get_prop("EMAIL_PASSWORD", "s")
+EMAIL_NAME = get_prop.get_prop("EMAIL_NAME", "s")
+CHART_FILE_NAME = get_prop.get_prop("CHART_FILE", "s")
+CHECK_FILE = get_prop.get_prop("EMAIL_CHECK_FILE", "s")
 
-EMAIL_PASSWORD_FILE = FILE_STUB + "email_password"
-EMAIL_NAME_FILE = FILE_STUB + "email_name"
-CHART_FILE_NAME = FILE_STUB + "chart"
-CHECK_FILE = FILE_STUB + "Email_sender_check"
-
-EMAILS = ["gavinlilly25@gmail.com", "gtlilly@hey.com"]
-SEND_TIMES = ["18:00"]
-RESET_TIME = ["00:00"]
-FREQUENCY = 30
+EMAILS = get_prop.get_prop("EMAILS", "s")
+SEND_TIMES = get_prop.get_prop("SEND_TIMES", "s")
+RESET_TIME = get_prop.get_prop("RESET_TIME", "s")
+FREQUENCY = get_prop.get_prop("TIME_CHECK_FREQUENCY", "s")
 
 # runner(): void
 def runner():
@@ -68,63 +67,41 @@ def get_str_from_file(filename):
 
         return file_content
 
-def gen_send_email():
-    email = get_str_from_file(EMAIL_PASSWORD_FILE)
-    password = get_str_from_file(EMAIL_NAME_FILE)
+def send_email():
     port = 465
+    levels, datetimes = database_wrapper.get_24h_records()
+    smooth_levels = data_comp_wrapper.get_smooth_levels(levels)
+    inc, dec = data_comp_wrapper.get_inc_dec(smooth_levels)
+    cur_level = database_wrapper.get_newest_entry()
+    chart = data_comp_wrapper.create_chart(levels, datetimes)
 
-    def send_email():
-        levels, datetimes = database_wrapper.get_24h_records()
-        smooth_levels = data_comp_wrapper.get_smooth_levels(levels)
-        inc, dec = data_comp_wrapper.get_inc_dec(smooth_levels)
-        cur_level = database_wrapper.get_newest_entry()
-        chart = data_comp_wrapper.create_chart(levels, datetimes)
+    message = MIMEMultipart("alternative")
+    message["Subject"] = "Well Manager Daily Report " + time.strftime("%b-%d-%Y", time.localtime())
+    message["From"] = EMAIL_NAME
 
-        message = MIMEMultipart("alternative")
-        message["Subject"] = "Well Manager Daily Report " + time.strftime("%b-%d-%Y", time.localtime())
-        message["From"] = email
+    html = f"""\
+    <html>
+        <body>
+            <p>Current Level: {cur_level}%</p>
+            <p>Water brought in: {inc}%</p>
+            <p>Water used: {dec}%</p>
+        </body>
+    </html>
+    """
+    
+    part = MIMEText(html, "html")
+    message.attach(part)
+    fp = open(chart, "rb")
+    image = MIMEImage(fp.read())
+    fp.close()
+    message.attach(image)
+    send = smtplib.SMTP_SSL("smtp.gmail.com", port) # start connection
+    send.login(EMAIL_NAME, EMAIL_PASSWORD) # login
 
-        html = f"""\
-        <html>
-            <body>
-                <p>Current Level: {cur_level}%</p>
-                <p>Water brought in: {inc}%</p>
-                <p>Water used: {dec}%</p>
-            </body>
-        </html>
-        """
-        
-        part = MIMEText(html, "html")
-        message.attach(part)
-        fp = open(chart, "rb")
-        image = MIMEImage(fp.read())
-        fp.close()
-        message.attach(image)
-        send = smtplib.SMTP_SSL("smtp.gmail.com", port) # start connection
-        send.login(email, password) # login
+    for x in EMAILS:
+        send.sendmail(EMAIL_NAME, x, message.as_string()) # send message
 
-        for x in EMAILS:
-            send.sendmail(email, x, message.as_string()) # send message
-
-        send.quit()
-
-    error_message = ""
-    if(email == None and password == None):
-        error_message = "Couldn't get both email and email password from file"
-    elif(email == None):
-        error_message = "Couldn't get from email string from file"
-    elif(password == None):
-        error_message = "Couldn'nt get email password from file"
-
-    def error_function():
-        logger.log_error("Tried to send email. " + error_message)
-
-    if(error_message != ""):
-        return error_function
-
-    return send_email
-
-send_email = gen_send_email()
+    send.quit()
 
 def check_run():
     file_text = get_str_from_file(CHECK_FILE)

@@ -1,9 +1,12 @@
 # Module imports
-#################################3import RPi.GPIO as GPIO
 import time
 
 # My imports
 import logger
+import get_prop
+
+if(get_prop.get_prop("MOCK", "b") == False):
+    import RPi.GPIO as GPIO
 
 class Sensor:
     def __init__(self):

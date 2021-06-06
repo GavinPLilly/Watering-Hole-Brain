@@ -5,38 +5,16 @@ from datetime import datetime
 
 # my imports
 import logger
+import get_prop
 
-DB_PASSWORD_FILE = "/home/gavin/well-man/WellFlex/Watering-Hole-Brain/files/db_password"
-DATABASE_NAME = "water_records"
-
-# get_password(): String
-def __get_password():
-    pw_file_handle = None
-    password = ""
-    try:
-        pw_file_handle = open(DB_PASSWORD_FILE, 'r')
-        password = pw_file_handle.readline()
-        password = password.rstrip('\n')
-    except:
-        logger.log_error("Problem reading db password file")
-
-    if(pw_file_handle != None):
-        pw_file_handle.close()
-
-    return password
+DATABASE_NAME = get_prop.get_prop("DATABASE_NAME", "s")
+DATABASE_PASSWORD = get_prop.get_prop("DATABASE_PASSWORD", "s")
 
 # add_water_record(level: int): void
 def add_water_record(level):
-    try:
-        conn = mariadb.connect(
-                user = "gavin",
-                password = __get_password(),
-                host = "localhost",
-                port = 3306,
-                database = DATABASE_NAME
-                )
-    except:
-        logger.log_error("Problem connecting to MariaDB in add_water_record()")
+    conn = __get_connection("add_water_record()")
+    if(conn == None):
+        logger.log_error("Could't add a new record to database")
         return
 
     try:
@@ -56,10 +34,14 @@ def add_water_record(level):
 
 # get_24h_records(): (number[], datetime[])
 def get_24h_records():
+    conn = __get_connection("get_24h_records")
+    if(conn == None):
+        logger.log_error("Couldn't get daily records. Returning empty arrays")
+        return ([], [])
     try:
         conn = mariadb.connect(
             user = "gavin",
-            password = __get_password(),
+            password = DATABASE_PASSWORD(),
             host = "localhost",
             port = 3306,
             database = DATABASE_NAME
@@ -89,7 +71,7 @@ def get_24h_records():
     
 # delete_old_records(): void
 def delete_old_records():
-    conn = __get_cursor("delete_old_records()")
+    conn = __get_connection("delete_old_records()")
     if(conn == None):
         logger.log_error("error getting db cursor in delete_old_records(). Aborted")
         return 
@@ -110,7 +92,7 @@ def delete_old_records():
 
 # get_newest_entry(): (number, datetime)
 def get_newest_entry():
-    conn = __get_cursor("get_newest_entry()")
+    conn = __get_connection("get_newest_entry()")
     if(conn == None):
         logger.log_error("error getting db cursor in get_newest_entry()")
         return None
@@ -130,24 +112,19 @@ def get_newest_entry():
     finally:
         conn.close()
 
-# gen___get_cursor(): __get_cursor
-def gen___get_cursor():
-    # __get_cursor(calling_method: String): <Mariadb cursor object>
-    pwd = __get_password()
-    def __get_cursor(calling_method):
-        conn = None
-        try:
-            conn = mariadb.connect(
-                user = "gavin",
-                password = pwd,
-                host = "localhost",
-                port = 3306,
-                database = DATABASE_NAME
-                )
-        except:
-            logger.log_error("Problem connecting to MariaDB in " + calling_method)
+# __get_cursor(calling_method: String): <Mariadb cursor object>
+def __get_connection(calling_method):
+    conn = None
+    try:
+        conn = mariadb.connect(
+            user = "gavin",
+            password = DATABASE_PASSWORD,
+            host = "localhost",
+            port = 3306,
+            database = DATABASE_NAME
+            )
+    except:
+        logger.log_error("Problem connecting to MariaDB in " + calling_method)
 
-        return conn
-    return __get_cursor
+    return conn
 
-__get_cursor = gen___get_cursor()

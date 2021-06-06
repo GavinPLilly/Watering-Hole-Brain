@@ -1,0 +1,38 @@
+# The defaults are set in .config
+# Anything in this file will override the defaults
+# Uncomment the line for your changes to take affect
+# Syntax:
+# 	There are three value types: String, number and boolean. 
+# 	Array types are marked with "[]".
+# 	If the name for a key, (key: value), ends with "FILE", the FILE_STUB value will be prepended to it. This is so you don't have to repeatedly write out the entire path
+# 	No no colons, ":", allow in key names
+
+# FILE_STUB: /home/gavin/well-man/WellFlex/Watering-Hole-Brain/files/
+
+# logger
+# ERROR_LOG_FILE: 
+# EVENT_LOG_FILE: 
+
+# database_wrapper
+# DATABASE_NAME: 
+# DATEBASE_PASSWORD: 
+ 
+# sensor_wrapper
+# MOCK: 
+ 
+# data_comp_wrapper
+# THRESHOLD: 
+ 
+# Email_sender
+# EMAIL_PASSWORD: 
+# EMAIL_NAME: 
+# CHART_FILE: 
+# EMAIL_CHECK_FILE: 
+# EMAILS: []
+# SEND_TIMES: []
+# RESET_TIME: 
+# TIME_CHECK_FREQUENCY: 
+
+# Take_measurements
+# MEASUREMENT_CHECK_FILE: 
+# MEASUREMENT_FREQUENCY: 
