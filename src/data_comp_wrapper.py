@@ -1,20 +1,25 @@
 # Module imports
 import matplotlib
 matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 
 # My imports
 import logger
+import get_prop
 
+CHART_FILE = get_prop.get_prop("CHART_FILE", "s")
 THRESHOLD = 0.5
 
 # create_chart(levels: number[], datetimes: datetime[]): String
 def create_chart(levels, datetimes):
-    """
-        returns:
-            file name for the chart created
-    """
-    # Make the chart
-    pass
+    fig, ax = plt.subplots(1, 1) # Start creating a chart with axes    
+    myFmt = mdates.DateFormatter('%I%p') # Create a formatting function for x axis datetimes    
+    ax.xaxis.set_major_formatter(myFmt) # Format the datetimes on the x axis    
+    ax.set_ylim(bottom = 0, top = 100) # Set the limits of the y axis    
+    ax.plot(datetimes, levels) # Plot the data    
+    fig.savefig("test-chart")    
+
 
 # get_smooth_levels(levels: number[]): number[]
 def get_smooth_levels(levels):
