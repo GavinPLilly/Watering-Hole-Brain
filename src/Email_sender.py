@@ -15,7 +15,7 @@ import get_prop
 
 EMAIL_PASSWORD = get_prop.get_prop("EMAIL_PASSWORD", "s")
 EMAIL_NAME = get_prop.get_prop("EMAIL_NAME", "s")
-CHART_FILE_NAME = get_prop.get_prop("CHART_FILE", "s")
+CHART_FILE = get_prop.get_prop("CHART_FILE", "s")
 CHECK_FILE = get_prop.get_prop("EMAIL_CHECK_FILE", "s")
 
 EMAILS = get_prop.get_prop("EMAILS", "s")
@@ -46,6 +46,8 @@ def runner():
                     logger.log_error("Couldn't send email")
         time.sleep(FREQUENCY)
 
+    logger.log_event("Email_sender runner() exiting")
+
 
 
 # get_str_from_file(filename: String): String
@@ -73,7 +75,7 @@ def send_email():
     smooth_levels = data_comp_wrapper.get_smooth_levels(levels)
     inc, dec = data_comp_wrapper.get_inc_dec(smooth_levels)
     cur_level = database_wrapper.get_newest_entry()
-    chart = data_comp_wrapper.create_chart(levels, datetimes)
+    data_comp_wrapper.create_chart(levels, datetimes)
 
     message = MIMEMultipart("alternative")
     message["Subject"] = "Well Manager Daily Report " + time.strftime("%b-%d-%Y", time.localtime())
@@ -91,7 +93,7 @@ def send_email():
     
     part = MIMEText(html, "html")
     message.attach(part)
-    fp = open(chart, "rb")
+    fp = open(CHART_FILE, "rb")
     image = MIMEImage(fp.read())
     fp.close()
     message.attach(image)
@@ -109,3 +111,5 @@ def check_run():
         return True
     return False
 
+runner()
+logger.log_event("Email_sender exiting")
