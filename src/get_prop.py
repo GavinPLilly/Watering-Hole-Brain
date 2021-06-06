@@ -2,7 +2,7 @@
 
 # My imports
 
-CONFIG_FILE = "/home/gavin/well-man/WellFlex/Watering-Hole-Brain/files/.config"
+CONFIG_FILE = "../files/.config"
 
 # get_prop(key: String, mode: String): String | number | boolean | []
 def get_prop(key, mode):
@@ -18,7 +18,7 @@ def __get_raw_line(key):
     try:
         file_handle = open(CONFIG_FILE)
     except:
-        return None
+        return ''
 
     raw_line = ""
     while(True):
