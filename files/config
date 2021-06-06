@@ -14,6 +14,7 @@
 # EVENT_LOG_FILE: 
 
 # database_wrapper
+# MARIADB_USERNAME: gavin
 # DATABASE_NAME: 
 # DATEBASE_PASSWORD: 
  
