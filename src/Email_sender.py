@@ -21,13 +21,13 @@ CHECK_FILE = get_prop.get_prop("EMAIL_CHECK_FILE", "s")
 EMAILS = get_prop.get_prop("EMAILS", "s")
 SEND_TIMES = get_prop.get_prop("SEND_TIMES", "s")
 RESET_TIME = get_prop.get_prop("RESET_TIME", "s")
-FREQUENCY = get_prop.get_prop("TIME_CHECK_FREQUENCY", "s")
+FREQUENCY = get_prop.get_prop("TIME_CHECK_FREQUENCY", "n")
 
 # runner(): void
 def runner():
     logger.log_event("Email_sender runner started...")
     times_array = []
-    for x in EMAILS:
+    for x in SEND_TIMES:
         times_array.append(email_time.email_time(x))
 
     while(check_run):
@@ -38,7 +38,7 @@ def runner():
 
         for x in times_array:
             if(curtime == x.get_time() and x.has_passed() == False):
-                x.set_passed(False)
+                x.set_passed(True)
                 try:
                     send_email()
 
@@ -111,5 +111,6 @@ def check_run():
         return True
     return False
 
-runner()
-logger.log_event("Email_sender exiting")
+if(__name__ == "__main__"):
+    runner()
+    logger.log_event("Email_sender exiting")
