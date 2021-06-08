@@ -31,12 +31,14 @@ def runner():
         times_array.append(email_time.email_time(x))
 
     while(check_run):
+        logger.log_event("Looping through again...")
         curtime = time.strftime("%H:%M", time.localtime())
         if(curtime == RESET_TIME):
             for x in times_array:
                 x.set_passed(False)
 
         for x in times_array:
+            logger.log_event("time is " + str(curtime) + ". Waiting for " + x.get_time())
             if(curtime == x.get_time() and x.has_passed() == False):
                 x.set_passed(True)
                 try:
