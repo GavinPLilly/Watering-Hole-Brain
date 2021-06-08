@@ -33,12 +33,14 @@ def get_smooth_levels(levels):
         j = 0
         while(j <= right_index): # Loop through points in the line run an total up
             local_total += levels[j]
+            j += 1
 
         local_total /= (right_index - i)
 
         j = i
         while(j <= right_index):    # Add the new flat value for each entry in the line run
             smooth_arr.append(local_total)
+            j += 1
 
         i = right_index + 1
 
