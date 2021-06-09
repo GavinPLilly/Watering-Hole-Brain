@@ -75,5 +75,6 @@ def get_inc_dec(levels):
             dec -= diff
         elif(diff > 0):
             inc += diff
+        i += 1
 
     return (inc, dec)
