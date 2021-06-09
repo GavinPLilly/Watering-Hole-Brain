@@ -30,12 +30,12 @@ def get_smooth_levels(levels):
         right_index = __get_range(i, levels)    # get the right edge of the line run
         local_total = 0  # Total up all points in the line run to calc an average
 
-        j = 0
+        j = i
         while(j <= right_index): # Loop through points in the line run an total up
             local_total += levels[j]
             j += 1
 
-        local_total /= (right_index - i)
+        local_total /= (right_index - i + 1)
 
         j = i
         while(j <= right_index):    # Add the new flat value for each entry in the line run
@@ -56,10 +56,12 @@ def __get_range(index, arr):
     i = index
     while(i < len(arr)):
         if(abs(arr[i] - arr[index]) > THRESHOLD):
-            break
+            return i - 1    # This index breaks rule so return the previous one
+                            # This will never force for i = index because the diff will always be zero
+                            # so a previous index can't be returned
         i += 1
 
-    return i
+    return len(arr) - 1
 
 # get_inc_dec(levels: number[]): (number, number)
 def get_inc_dec(levels):
