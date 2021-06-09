@@ -30,7 +30,7 @@ def runner():
     for x in SEND_TIMES:
         times_array.append(email_time.email_time(x))
 
-    while(check_run):
+    while(check_run()):
         logger.log_event("Looping through again...")
         curtime = time.strftime("%H:%M", time.localtime())
         if(curtime == RESET_TIME):
@@ -78,6 +78,7 @@ def send_email():
     inc, dec = data_comp_wrapper.get_inc_dec(smooth_levels)
     cur_level = database_wrapper.get_newest_entry()
     data_comp_wrapper.create_chart(levels, datetimes)
+    logger.log_event("Collect data for email")
 
     message = MIMEMultipart("alternative")
     message["Subject"] = "Well Manager Daily Report " + time.strftime("%b-%d-%Y", time.localtime())
