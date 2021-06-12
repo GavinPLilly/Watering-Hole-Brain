@@ -14,11 +14,15 @@ THRESHOLD = 0.5
 # create_chart(levels: number[], datetimes: datetime[]): String
 def create_chart(levels, datetimes):
     fig, ax = plt.subplots(1, 1) # Start creating a chart with axes    
-    myFmt = mdates.DateFormatter('%I%p') # Create a formatting function for x axis datetimes    
+    myFmt = mdates.DateFormatter('%I %p') # Create a formatting function for x axis datetimes    
     ax.xaxis.set_major_formatter(myFmt) # Format the datetimes on the x axis    
     ax.set_ylim(bottom = 0, top = 100) # Set the limits of the y axis    
+    ax.grid(axis = 'y') # Add horizontal grid lines
+    ax.set_xlabel("Time") # Add x axis label
+    ax.set_ylabel("Percent Full") # Add y axis label
+    ax.set_title("Percent vs time") # Add chart title
     ax.plot(datetimes, levels) # Plot the data    
-    fig.savefig("test-chart")    
+    fig.savefig(CHART_FILE)    
 
 
 # get_smooth_levels(levels: number[]): number[]
@@ -78,3 +82,13 @@ def get_inc_dec(levels):
         i += 1
 
     return (inc, dec)
+
+# percent_to_gallon(percent: number): number
+def percent_to_gallon(percent):
+    CUBIC_FT_TO_GALLON = 7.481
+    WELLMAN_FULL_HEIGHT = 59 / 12
+    WELLMAN_LENGTH = 36 / 12
+    WELLMAN_WIDTH = 23 / 12
+    WELLMAN_USABLE_HEIGHT = 52.25 / 12
+
+    return (WELLMAN_USABLE_HEIGHT * (percent / 100)) * WELLMAN_LENGTH * WELLMAN_WIDTH * CUBIC_FT_TO_GALLON
