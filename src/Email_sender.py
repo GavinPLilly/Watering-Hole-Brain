@@ -15,7 +15,7 @@ import get_prop
 
 EMAIL_PASSWORD = get_prop.get_prop("EMAIL_PASSWORD", "s")
 EMAIL_NAME = get_prop.get_prop("EMAIL_NAME", "s")
-CHART_FILE = get_prop.get_prop("CHART_FILE", "s")
+CHART_FILE = get_prop.get_prop("CHART_FILE", "s") + ".png"
 CHECK_FILE = get_prop.get_prop("EMAIL_CHECK_FILE", "s")
 
 EMAILS = get_prop.get_prop("EMAILS", "s")
@@ -73,12 +73,18 @@ def get_str_from_file(filename):
 
 def send_email():
     port = 465
+
     levels, datetimes = database_wrapper.get_24h_records()
     smooth_levels = data_comp_wrapper.get_smooth_levels(levels)
+
     inc, dec = data_comp_wrapper.get_inc_dec(smooth_levels)
-    cur_level = database_wrapper.get_newest_entry()
+    inc = round(data_comp_wrapper.percent_to_gallon(inc), 1)
+    dec = round(data_comp_wrapper.percent_to_gallon(dec), 1)
+
+    cur_level = round(database_wrapper.get_newest_entry()[0], 1)
+
     data_comp_wrapper.create_chart(levels, datetimes)
-    logger.log_event("Collect data for email")
+    logger.log_event("Collected data for email")
 
     message = MIMEMultipart("alternative")
     message["Subject"] = "Well Manager Daily Report " + time.strftime("%b-%d-%Y", time.localtime())
@@ -88,8 +94,8 @@ def send_email():
     <html>
         <body>
             <p>Current Level: {cur_level}%</p>
-            <p>Water brought in: {inc}%</p>
-            <p>Water used: {dec}%</p>
+            <p>Water brought in: {inc} gallons</p>
+            <p>Water used: {dec} gallons</p>
         </body>
     </html>
     """
